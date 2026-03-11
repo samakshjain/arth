@@ -68,45 +68,50 @@
 
 ## Phase 2: Data Pipeline
 
-### 2.1 Research and Fetch Hindi Dictionary Data from Wiktionary
+### 2.1 Transform Wiktionary Data to arth Format
 
 **Files to create:**
 
-- `scripts/fetch-wiktionary.py`
-- `scripts/requirements.txt`
-- `data/raw/wiktionary_dump.jsonl`
+- `scripts/transform-wiktionary.py`
+- `data/raw/wiktionary_hindi.jsonl` (user-provided Wiktionary dump)
+- `src/data/dictionary.jsonl` (transformed output)
 
 **Acceptance Criteria:**
 
-- [ ] Script downloads latest Hindi entries from Wiktionary
-- [ ] Parses word, transliteration, definitions, part of speech
-- [ ] Handles rate limiting (respects API limits)
-- [ ] Produces valid JSONL output
-- [ ] Logs errors for malformed entries
+- [ ] Script reads local Wiktionary JSONL dump
+- [ ] Extracts: word, IAST transliteration, Urdu spelling, IPA pronunciation
+- [ ] Extracts grammatical forms with case/number tags
+- [ ] Extracts gender tags (masculine/feminine) from definitions
+- [ ] Converts IAST to simplified transliteration (ś→sh, ṣ→sh, etc.)
+- [ ] Outputs valid arth-format JSONL
+- [ ] Handles malformed entries gracefully with error logging
 
 **Effort:** Medium  
 **Dependencies:** 1.3
 
 ---
 
-### 2.2 Create Transliteration Normalizer
+### 2.2 Create Fuzzy Search Variations Generator
 
 **Files to create:**
 
-- `scripts/normalize-translit.py`
-- `scripts/transliteration_map.json`
-- `tests/test_normalizer.py`
+- `scripts/generate-fuzzy-keys.py`
+- `src/data/fuzzy-index.json` (generated)
+- `tests/test_fuzzy_generator.py`
 
 **Acceptance Criteria:**
 
-- [ ] Normalizes variations: `namaste`/`namastey`/`namasté` → `namaste`
-- [ ] Handles: `sh/chh`, `ee/i`, `oo/u`, `a/aa`
-- [ ] Maps common Roman spellings to standard transliteration
+- [ ] Generates variant keys for common spelling variations:
+  - `namaste`/`namastey`/`namasté` → `namaste`
+  - `sh/chh` variations (shanti/chhanti)
+  - Vowel variations: `ee/i`, `oo/u`, `a/aa`
+- [ ] Creates fuzzy index mapping variants to canonical transliteration
+- [ ] Handles 100+ common variation patterns
 - [ ] Unit tests cover 20+ edge cases
 - [ ] Performance: < 1ms per word
 
-**Effort:** Medium  
-**Dependencies:** None (parallel with 2.1)
+**Effort:** Small  
+**Dependencies:** 2.1
 
 ---
 
@@ -219,9 +224,9 @@
 
 ## Risk Mitigation
 
-| Risk                       | Mitigation                      |
-| -------------------------- | ------------------------------- |
-| Wiktionary API limits      | Cache dumps locally, run weekly |
-| Transliteration edge cases | Crowdsourced corrections later  |
-| Large search index         | Chunking, lazy loading          |
-| Devanagari font rendering  | Fallback fonts, preload         |
+| Risk                       | Mitigation                     |
+| -------------------------- | ------------------------------ |
+| Wiktionary data quality    | Validate entries, log errors   |
+| Transliteration edge cases | Crowdsourced corrections later |
+| Large search index         | Chunking, lazy loading         |
+| Devanagari font rendering  | Fallback fonts, preload        |

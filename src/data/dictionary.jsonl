@@ -1,5 +1,3 @@
-{"word": "नमस्ते", "transliteration": "namaste", "definitions": [{"pos": "interjection", "meaning": "hello; greetings"}], "examples": ["नमस्ते, आप कैसे हैं?"]}
-{"word": "चम्मच", "transliteration": "chammach", "definitions": [{"pos": "noun", "meaning": "spoon"}], "examples": ["एक चम्मच चीनी"]}
-{"word": "धन्यवाद", "transliteration": "dhanyavaad", "definitions": [{"pos": "interjection", "meaning": "thank you; thanks"}], "examples": ["धन्यवाद for your help"]}
-{"word": "पानी", "transliteration": "paani", "definitions": [{"pos": "noun", "meaning": "water"}], "examples": ["मुझे पानी चाहिए"]}
-{"word": "किताब", "transliteration": "kitaab", "definitions": [{"pos": "noun", "meaning": "book"}], "examples": ["यह मेरी किताब है"]}
+version https://git-lfs.github.com/spec/v1
+oid sha256:203dac865c67756be124aecb7392a7d660609d606a5542562f35f96652bf4faf
+size 80831452
