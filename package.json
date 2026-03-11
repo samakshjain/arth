@@ -5,7 +5,8 @@
   "description": "Clean, fast Hindi-English dictionary with client-side search",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "npm run build:index && astro build",
+    "build:index": "python3 scripts/build-index.py",
     "preview": "astro preview",
     "astro": "astro",
     "lint": "prettier --check . && astro check",

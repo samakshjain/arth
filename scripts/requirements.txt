@@ -1,0 +1,2 @@
+# Python dependencies for data pipeline
+# No external dependencies needed - uses only standard library

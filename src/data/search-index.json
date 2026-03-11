@@ -1,0 +1,20 @@
+{
+  "transliteration": {
+    "namaste": ["नमस्ते"],
+    "chammach": ["चम्मच"],
+    "dhanyavaad": ["धन्यवाद"],
+    "paani": ["पानी"],
+    "kitaab": ["किताब"]
+  },
+  "meaning": {
+    "hello": ["नमस्ते"],
+    "greetings": ["नमस्ते"],
+    "spoon": ["चम्मच"],
+    "thank": ["धन्यवाद"],
+    "you": ["धन्यवाद"],
+    "thanks": ["धन्यवाद"],
+    "water": ["पानी"],
+    "book": ["किताब"]
+  },
+  "entry_count": 5
+}
