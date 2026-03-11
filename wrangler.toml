@@ -1,0 +1,15 @@
+# Cloudflare Pages configuration
+# This file is used for local testing with Wrangler CLI
+# Production deployment is handled via GitHub Actions
+
+name = "arth"
+compatibility_date = "2024-01-01"
+
+# Build settings
+[build]
+command = "npm run build"
+output_dir = "dist"
+
+# Static site (no functions needed for MVP)
+# [[env.production]]
+# name = "arth-production"

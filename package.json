@@ -1,0 +1,32 @@
+{
+  "name": "arth",
+  "type": "module",
+  "version": "0.1.0",
+  "description": "Clean, fast Hindi-English dictionary with client-side search",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "lint": "prettier --check . && astro check",
+    "lint:fix": "prettier --write .",
+    "typecheck": "astro check",
+    "check": "npm run lint && npm run typecheck"
+  },
+  "dependencies": {
+    "astro": "^5.2.5",
+    "fuse.js": "^7.0.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.4",
+    "@astrojs/tailwind": "^5.1.4",
+    "@types/node": "^22.10.5",
+    "prettier": "^3.4.2",
+    "prettier-plugin-astro": "^0.14.1",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.7.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
