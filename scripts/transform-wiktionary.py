@@ -205,17 +205,58 @@ def transform_entry(wiktionary_entry: dict) -> dict | None:
     }
 
 
+def merge_entries(existing: dict, new: dict) -> dict:
+    """Merge two entries for the same word."""
+    # Merge definitions (avoid duplicates)
+    existing_defs = {
+        (d["pos"], d["meaning"]): d for d in existing.get("definitions", [])
+    }
+    for new_def in new.get("definitions", []):
+        key = (new_def["pos"], new_def["meaning"])
+        if key not in existing_defs:
+            existing["definitions"].append(new_def)
+
+    # Merge examples
+    existing_examples = set(
+        e["text"] if isinstance(e, dict) else e
+        for e in (existing.get("examples") or [])
+    )
+    for new_ex in new.get("examples") or []:
+        text = new_ex["text"] if isinstance(new_ex, dict) else new_ex
+        if text not in existing_examples:
+            if "examples" not in existing or existing["examples"] is None:
+                existing["examples"] = []
+            existing["examples"].append(new_ex)
+
+    # Merge forms
+    if new.get("forms"):
+        existing_forms = {
+            (f["form"], tuple(f["tags"])): f for f in (existing.get("forms") or [])
+        }
+        for new_form in new["forms"]:
+            key = (new_form["form"], tuple(new_form["tags"]))
+            if key not in existing_forms:
+                if "forms" not in existing or existing["forms"] is None:
+                    existing["forms"] = []
+                existing["forms"].append(new_form)
+
+    # Keep non-null values from either entry
+    for key in ["urdu", "ipa"]:
+        if not existing.get(key) and new.get(key):
+            existing[key] = new[key]
+
+    return existing
+
+
 def process_file(input_path: Path, output_path: Path) -> tuple[int, int]:
     """Process Wiktionary JSONL file and write transformed entries."""
     entries_processed = 0
     entries_written = 0
 
-    output_path.parent.mkdir(parents=True, exist_ok=True)
+    # Accumulate entries by word to handle duplicates
+    entries_by_word: dict[str, dict] = {}
 
-    with (
-        open(input_path, "r", encoding="utf-8") as infile,
-        open(output_path, "w", encoding="utf-8") as outfile,
-    ):
+    with open(input_path, "r", encoding="utf-8") as infile:
         for line_num, line in enumerate(infile, 1):
             line = line.strip()
             if not line:
@@ -228,8 +269,14 @@ def process_file(input_path: Path, output_path: Path) -> tuple[int, int]:
                 transformed = transform_entry(wiktionary_entry)
 
                 if transformed:
-                    outfile.write(json.dumps(transformed, ensure_ascii=False) + "\n")
-                    entries_written += 1
+                    word = transformed["word"]
+                    if word in entries_by_word:
+                        # Merge with existing entry
+                        entries_by_word[word] = merge_entries(
+                            entries_by_word[word], transformed
+                        )
+                    else:
+                        entries_by_word[word] = transformed
 
             except json.JSONDecodeError as e:
                 print(f"Error parsing line {line_num}: {e}", file=sys.stderr)
@@ -237,6 +284,13 @@ def process_file(input_path: Path, output_path: Path) -> tuple[int, int]:
             except Exception as e:
                 print(f"Error processing line {line_num}: {e}", file=sys.stderr)
                 continue
+
+    # Write merged entries
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(output_path, "w", encoding="utf-8") as outfile:
+        for entry in entries_by_word.values():
+            outfile.write(json.dumps(entry, ensure_ascii=False) + "\n")
+            entries_written += 1
 
     return entries_processed, entries_written
 

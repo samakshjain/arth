@@ -4,48 +4,69 @@ import type { DictionaryEntry, SearchResult } from '@/types';
 // Fuse.js search options
 const FUSE_OPTIONS = {
   keys: [
-    { name: 'word', weight: 0.4 },
-    { name: 'transliteration', weight: 0.35 },
-    { name: 'iast', weight: 0.15 },
-    { name: 'definitions.meaning', weight: 0.1 },
+    { name: 'word', weight: 0.2 },
+    { name: 'transliteration', weight: 0.25 },
+    { name: 'definitions.meaning', weight: 0.55 },
   ],
   threshold: 0.25,
   includeScore: true,
   minMatchCharLength: 2,
-  ignoreLocation: true,
+  ignoreLocation: false,
   useExtendedSearch: true,
-  // Penalize matches where the text is much longer than query
+  shouldSort: true,
   distance: 100,
 };
 
+// Chunk loading state
 let fuseInstance: Fuse<DictionaryEntry> | null = null;
 let dictionaryData: DictionaryEntry[] = [];
+let loadedChunks: Set<string> = new Set();
+let chunkManifest: { chunks: string[] } | null = null;
 
 /**
- * Initialize the search index with dictionary data.
- * Call this once on app load.
+ * Get the first character of a string (handles Devanagari)
  */
-export async function initSearch(): Promise<void> {
-  if (fuseInstance) return;
-
-  try {
-    const response = await fetch('/data/dictionary.jsonl');
-    if (!response.ok) {
-      throw new Error(`Failed to load dictionary: ${response.status}`);
-    }
-
-    const text = await response.text();
-    dictionaryData = parseDictionaryJSONL(text);
-
-    fuseInstance = new Fuse(dictionaryData, FUSE_OPTIONS);
-  } catch (error) {
-    console.error('Failed to initialize search:', error);
-    throw error;
+function getFirstChar(text: string): string {
+  if (!text) return 'other';
+  const char = text[0].toLowerCase();
+  if (/[\u0900-\u097F]/.test(char) || /[a-z]/.test(char)) {
+    return char;
   }
+  return 'other';
 }
 
 /**
- * Parse dictionary JSONL format.
+ * Load chunk manifest
+ */
+async function loadManifest(): Promise<{ chunks: string[] }> {
+  if (chunkManifest) return chunkManifest;
+
+  const response = await fetch('/data/chunks/manifest.json');
+  if (!response.ok) {
+    throw new Error(`Failed to load manifest: ${response.status}`);
+  }
+
+  chunkManifest = await response.json();
+  return chunkManifest!;
+}
+
+/**
+ * Load uncompressed chunk
+ */
+async function loadUncompressedChunk(chunkChar: string): Promise<DictionaryEntry[]> {
+  const response = await fetch(`/data/chunks/dict_${chunkChar}.jsonl`);
+  if (!response.ok) {
+    console.warn(`Chunk ${chunkChar} not found`);
+    return [];
+  }
+  const text = await response.text();
+  const entries = parseDictionaryJSONL(text);
+  loadedChunks.add(chunkChar);
+  return entries;
+}
+
+/**
+ * Parse dictionary JSONL format
  */
 function parseDictionaryJSONL(text: string): DictionaryEntry[] {
   const entries: DictionaryEntry[] = [];
@@ -59,7 +80,6 @@ function parseDictionaryJSONL(text: string): DictionaryEntry[] {
       const entry = JSON.parse(trimmed) as DictionaryEntry;
       entries.push(entry);
     } catch {
-      // Skip malformed lines
       continue;
     }
   }
@@ -68,8 +88,48 @@ function parseDictionaryJSONL(text: string): DictionaryEntry[] {
 }
 
 /**
- * Search the dictionary.
- * Returns results sorted by relevance (exact matches first).
+ * Initialize search with relevant chunks based on query
+ */
+export async function initSearch(query?: string): Promise<void> {
+  if (fuseInstance && !query) return;
+
+  try {
+    const manifest = await loadManifest();
+
+    if (!query) {
+      for (const chunk of manifest.chunks) {
+        if (!loadedChunks.has(chunk)) {
+          const entries = await loadUncompressedChunk(chunk);
+          dictionaryData.push(...entries);
+        }
+      }
+    } else {
+      const normalizedQuery = query.toLowerCase().trim();
+      const firstChar = getFirstChar(normalizedQuery);
+
+      if (!loadedChunks.has(firstChar)) {
+        const entries = await loadUncompressedChunk(firstChar);
+        dictionaryData.push(...entries);
+      }
+
+      const commonChunks = ['क', 'प', 'स', 'न', 'म', 'ब'];
+      for (const chunk of commonChunks) {
+        if (!loadedChunks.has(chunk) && chunk !== firstChar) {
+          const entries = await loadUncompressedChunk(chunk);
+          dictionaryData.push(...entries);
+        }
+      }
+    }
+
+    fuseInstance = new Fuse(dictionaryData, FUSE_OPTIONS);
+  } catch (error) {
+    console.error('Failed to initialize search:', error);
+    throw error;
+  }
+}
+
+/**
+ * Search the dictionary
  */
 export function search(query: string): SearchResult[] {
   if (!fuseInstance) {
@@ -81,11 +141,8 @@ export function search(query: string): SearchResult[] {
   }
 
   const normalizedQuery = query.toLowerCase().trim();
-
-  // Perform fuzzy search
   const results = fuseInstance.search(normalizedQuery);
 
-  // Transform to SearchResult format with ranking
   return results.map((result) => ({
     word: result.item.word,
     transliteration: result.item.transliteration,
@@ -96,19 +153,16 @@ export function search(query: string): SearchResult[] {
 }
 
 /**
- * Calculate length penalty for search results.
- * Penalizes matches where the matched text is much longer than the query.
+ * Calculate length penalty for search results
  */
 function calculateLengthPenalty(query: string, text: string): number {
   const queryLen = query.length;
   const textLen = text.length;
 
-  // If text is shorter than query (minus 1 for typo tolerance), penalize heavily
   if (textLen < queryLen - 1) {
     return 0.5;
   }
 
-  // If text is much longer than query, add small penalty
   if (textLen > queryLen * 2) {
     return 0.1;
   }
@@ -117,47 +171,37 @@ function calculateLengthPenalty(query: string, text: string): number {
 }
 
 /**
- * Search with improved ranking.
- * - Filters out results where matched text is too short
- * - Penalizes results where matched text is much longer
- * - Exact matches ranked highest
+ * Search with improved ranking
  */
 export function searchWithExactPriority(query: string): SearchResult[] {
   const normalizedQuery = query.toLowerCase().trim();
   const queryLen = normalizedQuery.length;
   const results = search(query);
 
-  // Score and filter results
   const scoredResults = results
     .map((result) => {
       let baseScore = result.score ?? 1;
-
-      // Check transliteration length vs query
       const translitLower = result.transliteration.toLowerCase();
       const iastLower = result.iast.toLowerCase();
 
-      // Skip if transliteration is significantly shorter than query
       if (translitLower.length < queryLen - 1 && iastLower.length < queryLen - 1) {
-        return { ...result, adjustedScore: 10 }; // Push to bottom
+        return { ...result, adjustedScore: 10 };
       }
 
-      // Apply length penalties
       const transPenalty = calculateLengthPenalty(normalizedQuery, translitLower);
       const iastPenalty = calculateLengthPenalty(normalizedQuery, iastLower);
       const bestPenalty = Math.min(transPenalty, iastPenalty);
 
-      // Check for exact match
       const isExactTrans = translitLower === normalizedQuery;
       const isExactIast = iastLower === normalizedQuery;
       const isPrefixMatch =
         translitLower.startsWith(normalizedQuery) || iastLower.startsWith(normalizedQuery);
 
-      // Boost exact matches and prefix matches
       let boost = 0;
       if (isExactTrans || isExactIast) {
-        boost = -0.3; // Strong boost for exact match
+        boost = -0.3;
       } else if (isPrefixMatch) {
-        boost = -0.15; // Medium boost for prefix match
+        boost = -0.15;
       }
 
       return {
@@ -165,26 +209,32 @@ export function searchWithExactPriority(query: string): SearchResult[] {
         adjustedScore: baseScore + bestPenalty + boost,
       };
     })
-    .filter((r) => r.adjustedScore < 5) // Remove heavily penalized results
+    .filter((r) => r.adjustedScore < 5)
     .sort((a, b) => a.adjustedScore - b.adjustedScore);
 
-  // Return with original score field
   return scoredResults.map(({ adjustedScore, ...result }) => ({
     ...result,
-    score: result.score, // Keep original fuse score
+    score: result.score,
   }));
 }
 
 /**
- * Quick check if search is ready.
+ * Quick check if search is ready
  */
 export function isSearchReady(): boolean {
-  return fuseInstance !== null;
+  return fuseInstance !== null && dictionaryData.length > 0;
 }
 
 /**
- * Get total number of entries.
+ * Get total number of loaded entries
  */
 export function getEntryCount(): number {
   return dictionaryData.length;
+}
+
+/**
+ * Get all loaded entries
+ */
+export function getAllEntries(): DictionaryEntry[] {
+  return dictionaryData;
 }

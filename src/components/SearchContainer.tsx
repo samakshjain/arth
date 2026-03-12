@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useEffect, useCallback, useRef } from 'react';
 import type { SearchResult } from '@/types';
 import ResultList from './ResultList';
@@ -9,64 +11,53 @@ export default function SearchContainer() {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const debounceTimer = useRef<NodeJS.Timeout | null>(null);
-  const isInitialMount = useRef(true);
+  const [isMounted, setIsMounted] = useState(false);
+  const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Read query from URL on mount
+  // Mark as mounted after hydration
   useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  // Read query from URL only on client side after mount
+  useEffect(() => {
+    if (!isMounted) return;
+
     const params = new URLSearchParams(window.location.search);
     const urlQuery = params.get('q');
     if (urlQuery) {
       setQuery(urlQuery);
     }
-  }, []);
+  }, [isMounted]);
 
-  const performSearch = useCallback(async (searchQuery: string) => {
-    if (searchQuery.length < MIN_QUERY_LENGTH) {
-      setResults([]);
-      return;
-    }
-
-    setIsLoading(true);
-
-    try {
-      const { initSearch, searchWithExactPriority } = await import('@/lib/search');
-      await initSearch();
-      const searchResults = searchWithExactPriority(searchQuery);
-      setResults(searchResults.slice(0, 20));
-    } catch (error) {
-      console.error('Search error:', error);
-      setResults([]);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
+  // Perform search when query changes
   useEffect(() => {
+    if (!isMounted) return;
+
+    // Clear previous timer
     if (debounceTimer.current) {
       clearTimeout(debounceTimer.current);
     }
 
-    debounceTimer.current = setTimeout(() => {
-      performSearch(query);
+    // Clear results if query is too short
+    if (query.length < MIN_QUERY_LENGTH) {
+      setResults([]);
+      return;
+    }
 
-      // Update URL for browser history support
-      if (query.length >= MIN_QUERY_LENGTH) {
-        const url = new URL(window.location.href);
-        url.searchParams.set('q', query);
-
-        // Use replaceState on initial load or typing, pushState when navigating back
-        if (isInitialMount.current) {
-          window.history.replaceState({}, '', url);
-          isInitialMount.current = false;
-        } else {
-          window.history.pushState({}, '', url);
-        }
-      } else if (query.length === 0) {
-        // Clear query param when search is empty
-        const url = new URL(window.location.href);
-        url.searchParams.delete('q');
-        window.history.replaceState({}, '', url);
+    // Debounce search
+    debounceTimer.current = setTimeout(async () => {
+      setIsLoading(true);
+      try {
+        const { initSearch, searchWithExactPriority } = await import('@/lib/search');
+        await initSearch();
+        const searchResults = searchWithExactPriority(query);
+        setResults(searchResults.slice(0, 20));
+      } catch (error) {
+        console.error('Search error:', error);
+        setResults([]);
+      } finally {
+        setIsLoading(false);
       }
     }, DEBOUNCE_MS);
 
@@ -75,7 +66,21 @@ export default function SearchContainer() {
         clearTimeout(debounceTimer.current);
       }
     };
-  }, [query, performSearch]);
+  }, [query, isMounted]);
+
+  // Update URL when query changes
+  useEffect(() => {
+    if (!isMounted) return;
+
+    const url = new URL(window.location.href);
+    if (query.length >= MIN_QUERY_LENGTH) {
+      url.searchParams.set('q', query);
+      window.history.replaceState({}, '', url);
+    } else {
+      url.searchParams.delete('q');
+      window.history.replaceState({}, '', url);
+    }
+  }, [query, isMounted]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
@@ -85,21 +90,41 @@ export default function SearchContainer() {
     if (e.key === 'Escape') {
       setQuery('');
       setResults([]);
-      // Clear URL
-      const url = new URL(window.location.href);
-      url.searchParams.delete('q');
-      window.history.pushState({}, '', url);
+      if (isMounted) {
+        const url = new URL(window.location.href);
+        url.searchParams.delete('q');
+        window.history.replaceState({}, '', url);
+      }
     }
   };
 
   const clearSearch = () => {
     setQuery('');
     setResults([]);
-    // Clear URL
-    const url = new URL(window.location.href);
-    url.searchParams.delete('q');
-    window.history.pushState({}, '', url);
+    if (isMounted) {
+      const url = new URL(window.location.href);
+      url.searchParams.delete('q');
+      window.history.replaceState({}, '', url);
+    }
   };
+
+  // Render minimal version during SSR to avoid hydration mismatch
+  if (!isMounted) {
+    return (
+      <div className="w-full">
+        <div className="relative w-full mb-6">
+          <input
+            type="text"
+            defaultValue=""
+            placeholder="Type a Hindi word, transliteration, or English meaning..."
+            className="w-full px-6 py-4 text-lg border-2 border-gray-300 rounded-xl focus:border-primary-500 focus:outline-none font-hindi pr-24"
+            readOnly
+          />
+        </div>
+        <ResultList results={[]} query="" />
+      </div>
+    );
+  }
 
   return (
     <div className="w-full">

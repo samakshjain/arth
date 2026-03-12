@@ -1,0 +1,303 @@
+{
+  "chunks": [
+    "\u0935",
+    "\u0905",
+    "\u0906",
+    "\u0915",
+    "\u0907",
+    "\u0908",
+    "\u0909",
+    "\u090a",
+    "\u090b",
+    "\u090f",
+    "\u0910",
+    "\u0911",
+    "\u0913",
+    "\u0914",
+    "\u0916",
+    "\u0917",
+    "\u0918",
+    "\u0919",
+    "\u091a",
+    "\u091b",
+    "\u091c",
+    "\u091d",
+    "\u091e",
+    "\u091f",
+    "\u0920",
+    "\u0921",
+    "\u0923",
+    "\u0924",
+    "\u0928",
+    "\u0926",
+    "\u0925",
+    "\u0922",
+    "\u0927",
+    "\u092e",
+    "\u092d",
+    "\u092c",
+    "\u092b",
+    "\u092a",
+    "\u0938",
+    "other",
+    "\u0936",
+    "\u0939",
+    "\u0950",
+    "\u092f",
+    "\u0932",
+    "\u0930",
+    "\u0937",
+    "\u090d",
+    "\u0972"
+  ],
+  "stats": {
+    "other": {
+      "count": 235,
+      "uncompressed": 142444,
+      "compressed": 19413
+    },
+    "\u0905": {
+      "count": 1892,
+      "uncompressed": 3728038,
+      "compressed": 335204
+    },
+    "\u0906": {
+      "count": 758,
+      "uncompressed": 1649637,
+      "compressed": 148682
+    },
+    "\u0907": {
+      "count": 362,
+      "uncompressed": 595956,
+      "compressed": 52875
+    },
+    "\u0908": {
+      "count": 46,
+      "uncompressed": 98632,
+      "compressed": 9653
+    },
+    "\u0909": {
+      "count": 944,
+      "uncompressed": 2842665,
+      "compressed": 207449
+    },
+    "\u090a": {
+      "count": 70,
+      "uncompressed": 185638,
+      "compressed": 15925
+    },
+    "\u090b": {
+      "count": 21,
+      "uncompressed": 12874,
+      "compressed": 2344
+    },
+    "\u090d": {
+      "count": 1,
+      "uncompressed": 913,
+      "compressed": 323
+    },
+    "\u090f": {
+      "count": 111,
+      "uncompressed": 68896,
+      "compressed": 12116
+    },
+    "\u0910": {
+      "count": 38,
+      "uncompressed": 256263,
+      "compressed": 17971
+    },
+    "\u0911": {
+      "count": 11,
+      "uncompressed": 8842,
+      "compressed": 1416
+    },
+    "\u0913": {
+      "count": 50,
+      "uncompressed": 67162,
+      "compressed": 7842
+    },
+    "\u0914": {
+      "count": 38,
+      "uncompressed": 164641,
+      "compressed": 12534
+    },
+    "\u0915": {
+      "count": 2185,
+      "uncompressed": 3124057,
+      "compressed": 312286
+    },
+    "\u0916": {
+      "count": 952,
+      "uncompressed": 2529203,
+      "compressed": 197692
+    },
+    "\u0917": {
+      "count": 993,
+      "uncompressed": 3318753,
+      "compressed": 249480
+    },
+    "\u0918": {
+      "count": 409,
+      "uncompressed": 1285939,
+      "compressed": 92677
+    },
+    "\u0919": {
+      "count": 1,
+      "uncompressed": 244,
+      "compressed": 201
+    },
+    "\u091a": {
+      "count": 1478,
+      "uncompressed": 3690249,
+      "compressed": 282501
+    },
+    "\u091b": {
+      "count": 705,
+      "uncompressed": 2000477,
+      "compressed": 136382
+    },
+    "\u091c": {
+      "count": 1487,
+      "uncompressed": 2841928,
+      "compressed": 233295
+    },
+    "\u091d": {
+      "count": 283,
+      "uncompressed": 1128324,
+      "compressed": 77428
+    },
+    "\u091e": {
+      "count": 1,
+      "uncompressed": 238,
+      "compressed": 188
+    },
+    "\u091f": {
+      "count": 266,
+      "uncompressed": 1020723,
+      "compressed": 73135
+    },
+    "\u0920": {
+      "count": 108,
+      "uncompressed": 699513,
+      "compressed": 46787
+    },
+    "\u0921": {
+      "count": 423,
+      "uncompressed": 1093170,
+      "compressed": 76413
+    },
+    "\u0922": {
+      "count": 129,
+      "uncompressed": 647632,
+      "compressed": 43726
+    },
+    "\u0923": {
+      "count": 1,
+      "uncompressed": 219,
+      "compressed": 186
+    },
+    "\u0924": {
+      "count": 905,
+      "uncompressed": 2114753,
+      "compressed": 184394
+    },
+    "\u0925": {
+      "count": 140,
+      "uncompressed": 713512,
+      "compressed": 46468
+    },
+    "\u0926": {
+      "count": 1241,
+      "uncompressed": 2595693,
+      "compressed": 216205
+    },
+    "\u0927": {
+      "count": 329,
+      "uncompressed": 984300,
+      "compressed": 75725
+    },
+    "\u0928": {
+      "count": 1222,
+      "uncompressed": 2803212,
+      "compressed": 232997
+    },
+    "\u092a": {
+      "count": 2789,
+      "uncompressed": 6322276,
+      "compressed": 500639
+    },
+    "\u092b": {
+      "count": 554,
+      "uncompressed": 1629873,
+      "compressed": 123572
+    },
+    "\u092c": {
+      "count": 2018,
+      "uncompressed": 5208975,
+      "compressed": 405302
+    },
+    "\u092d": {
+      "count": 746,
+      "uncompressed": 1989074,
+      "compressed": 161485
+    },
+    "\u092e": {
+      "count": 2132,
+      "uncompressed": 4474499,
+      "compressed": 379770
+    },
+    "\u092f": {
+      "count": 247,
+      "uncompressed": 364654,
+      "compressed": 41690
+    },
+    "\u0930": {
+      "count": 880,
+      "uncompressed": 2142733,
+      "compressed": 184242
+    },
+    "\u0932": {
+      "count": 1142,
+      "uncompressed": 2545372,
+      "compressed": 196600
+    },
+    "\u0935": {
+      "count": 957,
+      "uncompressed": 2142519,
+      "compressed": 186477
+    },
+    "\u0936": {
+      "count": 659,
+      "uncompressed": 975897,
+      "compressed": 97216
+    },
+    "\u0937": {
+      "count": 9,
+      "uncompressed": 7373,
+      "compressed": 1472
+    },
+    "\u0938": {
+      "count": 2787,
+      "uncompressed": 6808892,
+      "compressed": 560630
+    },
+    "\u0939": {
+      "count": 850,
+      "uncompressed": 2302982,
+      "compressed": 191550
+    },
+    "\u0950": {
+      "count": 1,
+      "uncompressed": 573,
+      "compressed": 306
+    },
+    "\u0972": {
+      "count": 1,
+      "uncompressed": 308,
+      "compressed": 218
+    }
+  },
+  "total_entries": 33607,
+  "total_uncompressed_mb": 75.65568923950195,
+  "total_compressed_mb": 6.154138565063477
+}

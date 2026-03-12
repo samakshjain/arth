@@ -5,11 +5,8 @@
   "description": "Clean, fast Hindi-English dictionary with client-side search",
   "scripts": {
     "dev": "astro dev",
-    "build": "npm run build:data && npm run copy:data && astro build",
-    "build:data": "npm run build:index && npm run build:fuzzy",
-    "build:index": "python3 scripts/build-index.py",
-    "build:fuzzy": "python3 scripts/generate-fuzzy-keys.py",
-    "copy:data": "mkdir -p public/data && cp src/data/dictionary.jsonl public/data/ && cp src/data/search-index.json public/data/",
+    "build": "npm run build:data && astro build",
+    "build:data": "echo 'Using existing data chunks'",
     "preview": "astro preview",
     "astro": "astro",
     "lint": "prettier --check . && astro check",
