@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import type { SearchResult } from '@/types';
 import ResultList from './ResultList';
 
@@ -45,19 +45,29 @@ export default function SearchContainer() {
       return;
     }
 
+    // Capture the query at the time this effect runs
+    const currentQuery = query;
+
     // Debounce search
     debounceTimer.current = setTimeout(async () => {
       setIsLoading(true);
       try {
         const { initSearch, searchWithExactPriority } = await import('@/lib/search');
         await initSearch();
-        const searchResults = searchWithExactPriority(query);
+
+        // Only update results if query hasn't changed
+        if (currentQuery !== query) return;
+
+        const searchResults = await searchWithExactPriority(query);
         setResults(searchResults.slice(0, 20));
       } catch (error) {
         console.error('Search error:', error);
         setResults([]);
       } finally {
-        setIsLoading(false);
+        // Only clear loading if query hasn't changed
+        if (currentQuery === query) {
+          setIsLoading(false);
+        }
       }
     }, DEBOUNCE_MS);
 
@@ -86,18 +96,6 @@ export default function SearchContainer() {
     setQuery(e.target.value);
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Escape') {
-      setQuery('');
-      setResults([]);
-      if (isMounted) {
-        const url = new URL(window.location.href);
-        url.searchParams.delete('q');
-        window.history.replaceState({}, '', url);
-      }
-    }
-  };
-
   const clearSearch = () => {
     setQuery('');
     setResults([]);
@@ -105,6 +103,12 @@ export default function SearchContainer() {
       const url = new URL(window.location.href);
       url.searchParams.delete('q');
       window.history.replaceState({}, '', url);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      clearSearch();
     }
   };
 

@@ -2,27 +2,25 @@
   "name": "arth",
   "type": "module",
   "version": "0.1.0",
-  "description": "Clean, fast Hindi-English dictionary with client-side search",
+  "description": "Clean, fast Hindi-English dictionary with TypeSense search",
   "scripts": {
     "dev": "astro dev",
-    "build": "npm run build:data && astro build",
-    "build:data": "echo 'Using existing data chunks'",
+    "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
     "lint": "prettier --check . && astro check",
     "lint:fix": "prettier --write .",
     "typecheck": "astro check",
-    "check": "npm run lint && npm run typecheck",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "test:python": "python3 tests/test_fuzzy_generator.py"
+    "check": "npm run lint && npm run typecheck"
   },
   "dependencies": {
+    "@astrojs/node": "^10.0.2",
     "@tailwindcss/vite": "^4.2.1",
     "astro": "^6.0.0",
-    "fuse.js": "^7.0.0",
     "react": "^19.2.4",
-    "react-dom": "^19.2.4"
+    "react-dom": "^19.2.4",
+    "react-router-dom": "^7.13.1",
+    "typesense": "^3.0.3"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.4",
@@ -33,8 +31,7 @@
     "prettier": "^3.4.2",
     "prettier-plugin-astro": "^0.14.1",
     "tailwindcss": "^4.2.1",
-    "typescript": "^5.7.3",
-    "vitest": "^4.0.18"
+    "typescript": "^5.7.3"
   },
   "engines": {
     "node": ">=18.0.0"

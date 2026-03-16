@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 40" width="120" height="40">
+  <!-- Minimal logo: just 'arth' with muted terracotta accent dot -->
+  
+  <!-- Muted terracotta bindi/dot - Indian influence -->
+  <circle cx="18" cy="8" r="2.5" fill="#B45309"/>
+  
+  <!-- Main text (muted warm gray) -->
+  <text x="5" y="30" fill="#57534E" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="28" font-weight="500" letter-spacing="-0.02em">arth</text>
+  
+  <!-- Subtle muted underline accent -->
+  <line x1="5" y1="34" x2="65" y2="34" stroke="#D6D3D1" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="52" y1="34" x2="65" y2="34" stroke="#B45309" stroke-width="1.5" stroke-linecap="round"/>
+</svg>

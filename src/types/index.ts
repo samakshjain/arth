@@ -37,6 +37,10 @@ export interface SearchResult {
   word: string;
   transliteration: string;
   iast: string;
+  urdu?: string;
+  ipa?: string;
   definitions: Definition[];
+  forms?: WordForm[];
+  examples?: Example[];
   score?: number;
 }

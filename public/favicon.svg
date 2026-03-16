@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Favicon: Simple 'अ' (a) in Devanagari with muted colors -->
+  <rect width="32" height="32" rx="6" fill="#57534E"/>
+  <text x="16" y="23" fill="#B45309" font-family="Noto Sans Devanagari, sans-serif" font-size="20" font-weight="500" text-anchor="middle">अ</text>
+</svg>

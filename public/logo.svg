@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" width="200" height="60">
+  <!-- Definition for subtle Indian pattern element -->
+  <defs>
+    <style>
+      .text { font-family: 'Noto Sans Devanagari', system-ui, sans-serif; }
+      .main { font-size: 36px; font-weight: 500; }
+      .accent { font-size: 14px; font-weight: 400; }
+    </style>
+  </defs>
+  
+  <!-- Subtle decorative bindi/dot above 'a' - Indian influence (muted terracotta) -->
+  <circle cx="28" cy="12" r="3" fill="#B45309" opacity="0.85"/>
+  
+  <!-- Main text: arth (muted warm gray) -->
+  <text x="10" y="45" class="text main" fill="#57534E" font-family="system-ui, -apple-system, sans-serif" font-size="36" font-weight="500" letter-spacing="-0.02em">arth</text>
+  
+  <!-- Subtle Devanagari 'अ' (a) as accent (muted terracotta) -->
+  <text x="115" y="32" class="text accent" fill="#B45309" font-family="Noto Sans Devanagari, sans-serif" font-size="16" opacity="0.8">अ</text>
+  
+  <!-- Decorative underline with muted orange accent -->
+  <line x1="10" y1="50" x2="100" y2="50" stroke="#A8A29E" stroke-width="2" stroke-linecap="round"/>
+  <line x1="85" y1="50" x2="100" y2="50" stroke="#B45309" stroke-width="2" stroke-linecap="round"/>
+</svg>

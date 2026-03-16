@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  webserver:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+      target: production
+    ports:
+      - '4321:4321'
+    environment:
+      - PUBLIC_TYPESENSE_URL=${PUBLIC_TYPESENSE_URL}
+      - PUBLIC_TYPESENSE_API_KEY=${TYPESENSE_API_KEY}
+    depends_on:
+      - typesense
+    restart: unless-stopped
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: npm run dev -- --host 0.0.0.0
+
+  typesense:
+    build:
+      context: .
+      dockerfile: Dockerfile.typesense
+    ports:
+      - '8108:8108'
+    environment:
+      - TYPESENSE_API_KEY=${TYPESENSE_API_KEY}
+    volumes:
+      - typesense_data:/data
+    restart: unless-stopped
+
+volumes:
+  typesense_data:
