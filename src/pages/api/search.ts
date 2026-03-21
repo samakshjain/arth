@@ -1,9 +1,11 @@
 import type { APIRoute } from 'astro';
 import { Client } from 'typesense';
 
-const TYPESENSE_URL = import.meta.env.PUBLIC_TYPESENSE_URL || 'http://localhost:8108';
+const TYPESENSE_URL = import.meta.env.PUBLIC_TYPESENSE_URL || 'http://typesense:8108';
 const TYPESENSE_API_KEY = import.meta.env.PUBLIC_TYPESENSE_API_KEY || 'xyz';
 const COLLECTION_NAME = 'dictionary';
+
+export const prerender = false;
 
 const client = new Client({
   nodes: [{ url: TYPESENSE_URL }],
@@ -20,8 +22,8 @@ export const ALL: APIRoute = async ({ request }) => {
     const prefix = url.searchParams.get('prefix') !== 'false';
 
     if (!q || q.length < 2) {
-      return new Response(JSON.stringify({ hits: [] }), {
-        status: 200,
+      return new Response(JSON.stringify({ error: 'Query must be at least 2 characters' }), {
+        status: 400,
         headers: { 'Content-Type': 'application/json' },
       });
     }

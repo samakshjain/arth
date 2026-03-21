@@ -3,13 +3,12 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.web
-      target: production
     ports:
       - '4321:4321'
     environment:
       - HOST=0.0.0.0
-      - PUBLIC_TYPESENSE_URL=${PUBLIC_TYPESENSE_URL}
-      - PUBLIC_TYPESENSE_API_KEY=${TYPESENSE_API_KEY}
+      - PUBLIC_TYPESENSE_URL=${PUBLIC_TYPESENSE_URL:-http://typesense:8108}
+      - PUBLIC_TYPESENSE_API_KEY=${TYPESENSE_API_KEY:-xyz}
     depends_on:
       - typesense
     restart: unless-stopped
@@ -21,7 +20,7 @@ services:
     ports:
       - '8108:8108'
     environment:
-      - TYPESENSE_API_KEY=${TYPESENSE_API_KEY}
+      - TYPESENSE_API_KEY=${TYPESENSE_API_KEY:-xyz}
     volumes:
       - typesense_data:/data
     restart: unless-stopped
